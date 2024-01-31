@@ -13,6 +13,9 @@ const Signup = ()=>{
     const [successMessage, setSuccessMessage]=useState("");
     const [errorMessage,setErrorMessage]=useState("");
 
+    // login token
+    const [token,  setToken]=useState("");
+
 
     function updateUser(e){
         const key = e.target.name;
@@ -32,25 +35,31 @@ const Signup = ()=>{
         }
         try {
             const response = await axios.post("https://instagram-express-app.vercel.app/api/auth/signup",
-            {
-                name: name,
-                "email": email,
-                "password": password,
-            });
-            console.log("success",response.data.message);
+            {name,email,password});
+
+            console.log("success",response.data.data.token);
             setSuccessMessage(response.data.message);
-            setErrorMessage("")
+            setErrorMessage("") //set the error message to empty wen success
+            //reset form
+            setUser({
+                name: "",
+                email: "",
+                password: "",
+                confirmPassword: ""
+            })
+            // set token
+            setToken(response.data.data.token);
             
         } catch (error) {
             console.log("failure",error.response.data.message);
             setErrorMessage(error.response.data.message);
-            setSuccessMessage("")
+            setSuccessMessage("") //set success message empty wen failed
         }
     }
 
     return (
         <div className="container"> 
-            {successMessage  && <h5 className="sucess">{successMessage}</h5>}
+            {successMessage  && <h5 className="success">{successMessage}</h5>}
             {errorMessage && <h5 className='danger'>{errorMessage}</h5>}
             <h1>Sign Up</h1>
             <form onSubmit={handleSignup}>
