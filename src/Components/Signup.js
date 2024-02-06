@@ -1,5 +1,7 @@
-import React,{useState} from "react";
+import React,{useState,useContext} from "react";
 import axios from "axios";
+import UserContext from "../Context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -9,12 +11,15 @@ const Signup = ()=>{
     const  [user , setUser] = useState({name:"",email:"",password:"",confirmPassword:""});
     const  { name, email, password, confirmPassword }= user;
 
+     // importing the usenavigate to allow redirecting
+     const navigate = useNavigate();
+
     // useState variables to handle the succes and error messages
     const [successMessage, setSuccessMessage]=useState("");
     const [errorMessage,setErrorMessage]=useState("");
 
-    // login token
-    const [token,  setToken]=useState("");
+
+    const {setToken} = useContext(UserContext)
 
 
     function updateUser(e){
@@ -39,6 +44,10 @@ const Signup = ()=>{
 
             console.log("success",response.data.data.token);
             setSuccessMessage(response.data.message);
+            // set token
+            setToken(response.data.data.token);
+            // storing the token in local storage
+            localStorage.setItem("token", JSON.stringify(response.data.data.token))
             setErrorMessage("") //set the error message to empty wen success
             //reset form
             setUser({
@@ -47,8 +56,9 @@ const Signup = ()=>{
                 password: "",
                 confirmPassword: ""
             })
-            // set token
-            setToken(response.data.data.token);
+
+            alert("User Sign Up successful")
+            navigate("/dashboard")
             
         } catch (error) {
             console.log("failure",error.response.data.message);
